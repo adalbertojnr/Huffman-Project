@@ -1,0 +1,8 @@
+{
+    "files.associations": {
+        "funcoes.h": "c",
+        "stdio.h": "c",
+        "compactar.h": "c",
+        "descompactar.h": "c"
+    }
+}
