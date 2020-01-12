@@ -1,6 +1,4 @@
 #include "suporte.h"
 
-void compactar()
-{
-    
-}
+//Realiza todo o procedimento para compactar.
+void compactar();

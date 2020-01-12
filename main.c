@@ -6,6 +6,7 @@ int main()
 {
     int escolha, i;
     while(1){
+        printf("Escolha o procedimento a ser realizado(1 para Compactar, 2 para Descompactar e 3 para Finalizar\n):");
         scanf("%d", &escolha);
         if(escolha == 1){
             compactar();
