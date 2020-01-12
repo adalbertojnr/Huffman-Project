@@ -1,58 +1,56 @@
-#include <stdio.h>
-#include <string.h>
-#define MAX 256
+#ifndef suporte.h
+    #define suporte.h
+    #include <stdio.h>
+    #include <string.h>
+    #define MAX 256
+    #define H_MAX 31
 
-typedef struct NO{
-    void *item;
-    int freq;
-    struct NO *prox;
-    struct NO *esq;
-    struct NO *dir;
-}NO;
+    typedef struct NO{
+        void *item;
+        int freq;
+        struct NO *prox;
+        struct NO *esq;
+        struct NO *dir;
+    }NO;
 
-typedef struct FILA{
-    struct NO *topo;
-}FILA;  
+    typedef struct FILA{
+        struct NO *cabeca;
+    }FILA;
 
-typedef struct ELEMENTO{
-    char caminho[30];
-    long long int frequencia;
-}ELEMENTO;
+    typedef struct ELEMENTO{
+        char caminho[31]; // 31 = altura máxima
+        long long int frequencia;
+    }ELEMENTO;
 
-typedef struct HT{
-    ELEMENTO* tabela[MAX];
-}HT;
+    typedef struct HT{
+        ELEMENTO* tabela[MAX];
+    }HT;
 
 
-//Cria um no com seu respectivo item e frequencia.
-NO* criar_no(void *item, int frequencia);
+    //Cria um NO com seu respectivo item e frequencia.
+    NO* criar_no(void *item, int frequencia);
 
-//Cria uma Fila vazia.
-FILA* criar_fila();
+    //Cria uma FILA vazia.
+    FILA* criar_fila();
 
-//Adiciona um no na fila.
-void enfileirar(FILA *fila, NO *no);
+    //Adiciona um NO na fila.
+    void enfileirar(FILA *fila, NO *no);
 
-//retorna um no e o remove da fila.
-NO* desenfileirar(FILA *fila);
+    //Retorna um NO e o remove da fila.
+    NO* desenfileirar(FILA *fila);
 
-//Cria uma hash table vazia.
-HT* criar_hash_table();
+    //Cria um ELEMENTO vazio.
+    ELEMENTO* criar_elemento();
 
-//Adciona um elemento na tabela.
-void adcionar_na_hash(HT *ht, int key, int valor);
+    //Cria uma hash table vazia.
+    HT* criar_hash_table();
 
-//Retorna um elemento da tabela a partir de sua chave.
-int get(HT *ht, int key);
+    //Adciona um ELEMENTO na tabela.
+    void adcionar_na_hash(HT *ht, int chave, char *caminho, int frequencia);
 
-//Remove um elemento da tabela a partir de sua chave.
-void remover(HT *ht, int key);
+    //Retorna 1 se o ELEMENTO encontra-se na tabela.
+    int contem_chave(HT *ht, int chave);
 
-//Retorna 1 se o elemento encontra-se na tabela.
-int contem_key(HT *ht, int key);
-
-//Imprime a tabela.
-void print_ht(HT *ht);
-
-//Retorna 1 caso a fila seja vazia e 0 caso contrario.
-int fila_vazia(FILA *fila);
+    //Retorna 1 caso a FILA seja vazia e 0 caso contrario.
+    int fila_vazia(FILA *fila);
+#endif

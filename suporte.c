@@ -1,8 +1,7 @@
-#include <stdio.h>
-#include <stdlib.h>
-#define MAX 256
+#include "suporte.h"
 
-typedef struct NO{
+//APAGAR TUDO ISSO QUANDO ACABAR O SUPORTE.C
+/*typedef struct NO{
     void *item;
     int frequencia;
     struct NO *prox;
@@ -11,17 +10,19 @@ typedef struct NO{
 }NO;
 
 typedef struct FILA{
-    struct NO *topo;
+    struct NO *cabeca;
 }FILA;  
 
 typedef struct ELEMENTO{
-    char caminho[30];
+    char caminho[H_MAX];  // H_MAX = altura máxima
     long long int frequencia;
 }ELEMENTO;
 
 typedef struct HT{
     ELEMENTO *tabela[MAX];
-}HT;
+}HT;*/
+// APAGAR TUDO ISSO ACIMA
+
 
 //Cria um no com seu respectivo item e frequencia.
 NO* criar_no(void *item, int frequencia)
@@ -39,13 +40,13 @@ NO* criar_no(void *item, int frequencia)
 FILA* criar_fila()
 {
     FILA *nova_fila = (FILA*) malloc(sizeof(FILA));
-    nova_fila->topo = NULL;
+    nova_fila->cabeca = NULL;
     return nova_fila;
 }
 
 int fila_vazia(FILA *fila)
 {
-    return (fila->topo == NULL);
+    return (fila->cabeca == NULL);
 }
 
 //Adiciona um no na fila.
@@ -53,11 +54,11 @@ void enfileirar(FILA *fila, void *item, int frequencia)
 {
     NO *novo_no = criar_no(item, frequencia);
 
-    if( (fila_vazia(fila)) || ( frequencia <= (fila->topo->frequencia) ) ){
-        novo_no->prox = fila->topo;
-        fila->topo = novo_no;
+    if( (fila_vazia(fila)) || ( frequencia <= (fila->cabeca->frequencia) ) ){
+        novo_no->prox = fila->cabeca;
+        fila->cabeca = novo_no;
     }else{
-        NO *auxiliar = fila->topo;
+        NO *auxiliar = fila->cabeca;
         while ( (auxiliar->prox != NULL) && ( auxiliar->prox->frequencia < frequencia) ) {
             auxiliar = auxiliar->prox;
         }
@@ -70,30 +71,39 @@ void enfileirar(FILA *fila, void *item, int frequencia)
 NO* desenfileirar(FILA *fila)
 {
     if(fila_vazia(fila)) return;
-    NO *auxiliar = fila->topo;
-    fila->topo = fila->topo->prox;
+    NO *auxiliar = fila->cabeca;
+    fila->cabeca = fila->cabeca->prox;
     auxiliar->prox = NULL;
     return auxiliar;
+}
+
+//Cria um ELEMENTO vazio.
+ELEMENTO* criar_elemento()
+{
+    ELEMENTO *novo_elemento = (ELEMENTO*) malloc(sizeof(ELEMENTO));
+    novo_elemento->frequencia = 0;
+    return novo_elemento;
 }
 
 //Cria uma hash table vazia.
 HT* criar_hash_table()
 {
     HT *nova_ht = (HT*) malloc(sizeof(HT));
+    int i;
+    for(i=0; i<MAX; i++){
+        nova_ht->tabela[i] = criar_elemento();
+    }
     return nova_ht;
 }
 
 //Adciona um elemento na tabela.
-void adcionar_na_hash(HT *ht, int key, int valor);
-
-//Retorna um elemento da tabela a partir de sua chave.
-int get(HT *ht, int key);
-
-//Remove um elemento da tabela a partir de sua chave.
-void remover(HT *ht, int key);
+void adcionar_na_hash(HT *ht, int chave, char *caminho, int frequencia)
+{
+}
 
 //Retorna 1 se o elemento encontra-se na tabela.
-int contem_key(HT *ht, int key);
-
-//Imprime a tabela.
-void print_ht(HT *ht);
+int contem_chave(HT *ht, int chave)
+{
+    int h = chave%MAX;
+    return( !(ht->tabela[h] == NULL) );
+}
