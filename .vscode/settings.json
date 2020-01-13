@@ -3,7 +3,8 @@
         "funcoes.h": "c",
         "stdio.h": "c",
         "compactar.h": "c",
-        "descompactar.h": "c"
+        "descompactar.h": "c",
+        "suporte.h": "c"
     },
     "git.autofetch": true
 }

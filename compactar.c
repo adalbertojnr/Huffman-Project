@@ -1,6 +1,4 @@
 #include "compactar.h"
-#include <stdio.h>
-#include <stdlib.h>
 
 //Realiza todo o procedimento para compactar.
 void compactar()
@@ -15,9 +13,16 @@ void compactar()
     FILE *arquivo = fopen(nome_do_arquivo, "rb");
 
     if(arquivo == NULL){
-        printf("Erro no arquivo.\nERRO 001\n");
+        printf("Erro no arquivo.\nERRO 017\n");
         return;
     }
     printf("Iniciando processo de compactação...\n##############[0%]\n##############[13,7%]\n");
+
+    HT *ht = criar_hash_table();
+    adicionar_cada_frequencia(arquivo, ht);
+    rewind(arquivo);
+    printf("\nProcesso em andamento...\n##############[21,9%]\n");
     
+    FILA *fila = criar_fila_basica();
+    fila = criar_fila_prioridade(ht, fila); //Fila aponta para a raiz da arvore.
 }
