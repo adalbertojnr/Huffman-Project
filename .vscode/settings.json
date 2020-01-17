@@ -4,7 +4,9 @@
         "stdio.h": "c",
         "compactar.h": "c",
         "descompactar.h": "c",
-        "suporte.h": "c"
+        "suporte.h": "c",
+        "string": "c",
+        "iosfwd": "c"
     },
     "git.autofetch": true
 }

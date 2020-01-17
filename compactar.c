@@ -3,8 +3,8 @@
 //Realiza todo o procedimento para compactar.
 void compactar()
 {
-    char nome_do_arquivo[100];
-    int i, j;
+    char nome_do_arquivo[100], caminho[ALTURA_MAX];
+    int i, contador=0;
 
     printf("Digite o nome do arquivo a ser compactado:\n");
     scanf("%s", nome_do_arquivo);
@@ -23,6 +23,10 @@ void compactar()
     rewind(arquivo);
     printf("\nProcesso em andamento...\n##############[21,9%]\n");
     
-    FILA *fila = criar_fila_basica();
+    FILA *fila = criar_fila_vazia();
     fila = criar_fila_prioridade(ht, fila); //Fila aponta para a raiz da arvore.
+    NO *arvore = criar_arvore_huffman(fila);
+    criar_caminho_na_hash(arvore, ht, caminho, contador);
+    printf("\nProcesso em andamento...\n##############[67,31%]\n");
+    
 }

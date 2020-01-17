@@ -3,10 +3,11 @@
     #include <stdio.h>
     #include <string.h>
     #include <stdlib.h>
+    #include <stdbool.h>
     #include "compactar.h"
     #include "descompactar.h"
     #define MAX 256
-    #define H_MAX 31
+    #define ALTURA_MAX 31
 
     typedef struct NO{
         void *item;
@@ -21,7 +22,7 @@
     }FILA;
 
     typedef struct ELEMENTO{
-        char caminho[H_MAX]; //H_MAX = 31 = altura máxima
+        char caminho[ALTURA_MAX]; //ALTURA_MAX = 31 = altura máxima
         long long int frequencia;
     }ELEMENTO;
 
@@ -29,6 +30,9 @@
         ELEMENTO* tabela[MAX]; //Numero de elementos na tabela ASCII
     }HT;
 
+
+    //Adiciona uma strings na hash.
+    void adicionar_strings_na_hash(HT *ht, NO *arvore);
 
     //Cria um NO com seu respectivo item e frequencia.
     NO* criar_no(void *item, int frequencia);
@@ -48,8 +52,11 @@
     //Cria uma hash table vazia.
     HT* criar_hash_table();
 
-    //Adciona um ELEMENTO na tabela.
-    void adcionar_na_hash(HT *ht, int chave, char *caminho, int frequencia);
+    //Recebe um no e retorna true caso seja um no folha.
+    bool eh_folha(NO *no);
+
+    //Cria e salva todos os caminhos em seu respectivo lugar da hash.
+    void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador);
 
     //Retorna 1 se o ELEMENTO encontra-se na tabela.
     int contem_chave(HT *ht, int chave);
@@ -62,6 +69,12 @@
 
     //Partindo de uma fila vazia a transforma na fila de prioridade de huffman, enfileirando seus itens e respectivas frequencias.
     FILA* criar_fila_prioridade(HT *ht, FILA *fila);
+
+    //Calcula o tamanho do lixo a partir da hash.
+    int calcula_tam_lixo(HT *ht);
+
+    //Calcula o tamanho da arvore.
+    void calcula_tam_arvore(NO *raiz_arvore, int *tamanho);
 
     //Transforma a fila de prioridade em um formato de arvore de huffman.
     NO* criar_arvore_huffman(FILA *fila);

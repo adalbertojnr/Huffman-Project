@@ -13,7 +13,7 @@ NO* criar_no(void *item, int frequencia)
 }
 
 //Cria uma Fila simples vazia.
-FILA* criar_fila_basica()
+FILA* criar_fila_vazia()
 {
     FILA *nova_fila = (FILA*) malloc(sizeof(FILA));
     nova_fila->cabeca = NULL;
@@ -71,9 +71,49 @@ HT* criar_hash_table()
     return nova_ht;
 }
 
-//Adciona um elemento na tabela.
-void adcionar_na_hash(HT *ht, int chave, char *caminho, int frequencia)
+//Recebe um no e retorna true caso seja um no folha.
+bool eh_folha(NO *no)
 {
+    return(no->dir == NULL && no->esq == NULL);
+}
+
+//Adiciona uma strings na hash.
+void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
+{
+    int h = (unsigned char*)item;
+    strcpy(ht->tabela[h]->caminho, caminho);
+}
+
+//Cria e salva todos os caminhos em seu respectivo lugar da hash.
+void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador)
+{
+    if(eh_folha(raiz_arvore)){
+        caminho[contador] = '\0';
+        adicionar_strings_na_hash(ht, raiz_arvore->item, caminho);
+    }else{
+        caminho[contador] = '0';
+        criar_caminho_na_hash(raiz_arvore->esq, ht, caminho, contador+1);
+        caminho[contador] = '1';
+        criar_caminho_na_hash(raiz_arvore->dir, ht, caminho, contador+1);
+    }
+}
+
+//Calcula o tamanho do lixo a partir da hash.
+int calcula_tam_lixo(HT *ht)
+{
+
+}
+
+//Calcula o tamanho da arvore.
+void calcula_tam_arvore(NO *raiz_arvore, int *tamanho)
+{
+    if(eh_folha(raiz_arvore)){
+        return;
+    }else{
+        tamanho += 2;
+        calcula_tam_arvore(raiz_arvore->dir, &tamanho);
+        calcula_tam_arvore(raiz_arvore->esq, &tamanho);
+    }
 }
 
 //Retorna 1 se o elemento encontra-se na tabela.
@@ -85,7 +125,7 @@ int contem_chave(HT *ht, int chave)
 
 //Calcula o valor da frequencia de cada caractere e adiciona em seus respectivos elementos na hash table.
 void adicionar_cada_frequencia(FILE *arquivo, HT *ht)
-{
+{   
     int num;
     while( (num = fgetc(arquivo) ) != EOF){
         ht->tabela[num]->frequencia += 1;
@@ -98,9 +138,9 @@ FILA* criar_fila_prioridade(HT *ht, FILA *fila)
     int i;
     for(i=0; i<256; i++){
         if(ht->tabela[i]->frequencia != 0){
-            unsigned char *caractere = (unsigned char*) malloc(sizeof(unsigned char));
-            *caractere = i;
-            NO *no = criar_no(caractere, ht->tabela[i]->frequencia);
+            unsigned char *caracter = (unsigned char*) malloc(sizeof(unsigned char));
+            *caracter = i;
+            NO *no = criar_no(caracter, ht->tabela[i]->frequencia);
             enfileirar(fila, no);
         }
     }
@@ -113,16 +153,16 @@ NO* criar_arvore_huffman(FILA *fila)
     if(fila->cabeca->prox != NULL){
         NO *no_1 = desenfileirar(fila);
         NO *no_2 = desenfileirar(fila);
-        NO *new_node = (NO*) malloc(sizeof(NO));
+        NO *novo_no = (NO*) malloc(sizeof(NO));
 
         unsigned char *caracter = (unsigned char*) malloc(sizeof(unsigned char)); //Para setar como '*' utilizando os 8 bits.
         *caracter = '*';
-        new_node->item = caracter;
+        novo_no->item = caracter;
 
-        new_node->frequencia = no_1->frequencia + no_2->frequencia;
-        new_node->dir = no_2;
-        new_node->esq = no_1;
-        enfileirar(fila, new_node);
+        novo_no->frequencia = no_1->frequencia + no_2->frequencia;
+        novo_no->dir = no_2;
+        novo_no->esq = no_1;
+        enfileirar(fila, novo_no);
         criar_arvore_huffman(fila);
     }else{
         return fila->cabeca;
