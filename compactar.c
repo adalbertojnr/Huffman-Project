@@ -40,5 +40,5 @@ void compactar()
     unsigned char aux = cabecalho;
     fprintf(saida, "%c%c", cabecalho>>8, aux);
     imprimir_pre_ordem(saida, arvore);
-    
+    Teste
 }
