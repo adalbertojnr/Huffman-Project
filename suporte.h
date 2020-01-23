@@ -30,6 +30,20 @@
         ELEMENTO* tabela[MAX]; //Numero de elementos na tabela ASCII
     }HT;
 
+    //Verifica se a arvore eh vazia.
+    int is_empty(NO *bt);
+
+    //Imprime a arvore em pre ordem no arquivo saida.
+    void imprimir_pre_ordem(FILE *arquivo, NO *bt)
+
+    //Printa todos os bits de dados no arquivo saida.
+    void imprimir_bits_dados(FILE *arquivo, NO *bt);
+
+    //Seta apenas um bit desginado.
+    unsigned char setar_um_bit(unsigned char c, int i);
+
+    //Seta determinados bits.
+    unsigned char setar_bits(unsigned char c, int tamanho);
 
     //Adiciona uma strings na hash.
     void adicionar_strings_na_hash(HT *ht, NO *arvore);
@@ -73,8 +87,8 @@
     //Calcula o tamanho do lixo a partir da hash.
     int calcula_tam_lixo(HT *ht);
 
-    //Calcula o tamanho da arvore.
-    void calcula_tam_arvore(NO *raiz_arvore, int *tamanho);
+    //Calcula o tamanho da arvore.  
+    void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho);
 
     //Transforma a fila de prioridade em um formato de arvore de huffman.
     NO* criar_arvore_huffman(FILA *fila);
