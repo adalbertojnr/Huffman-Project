@@ -6,7 +6,8 @@
         "descompactar.h": "c",
         "suporte.h": "c",
         "string": "c",
-        "iosfwd": "c"
+        "iosfwd": "c",
+        "stdbool.h": "c"
     },
     "git.autofetch": true
 }

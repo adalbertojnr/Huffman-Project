@@ -1,6 +1,6 @@
 #include "suporte.h"
 
-NO* criar_no(void *item, int frequencia)
+NO* criar_no(unsigned char item, int frequencia)
 {
     NO *novo_no = (NO*) malloc(sizeof(NO));
     novo_no->item = item;
@@ -11,20 +11,20 @@ NO* criar_no(void *item, int frequencia)
     return novo_no;
 }
 
-int eh_vazia(NO *bt)
+int eh_vazia(NO *raiz_arvore)
 {
-    return (bt == NULL);
+    return (raiz_arvore == NULL);
 }
 
-void imprimir_pre_ordem(FILE *arquivo, NO *bt)
+void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore)
 {
-    if(bt != NULL){
-        if( (bt->item == '\\' || bt->item == '*') && eh_folha(bt) ){
-            fprintf(arquivo, "\\");
+    if(raiz_arvore != NULL){
+        if( ( (char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*' ) && eh_folha(raiz_arvore) ){
+            fputc('\\', arquivo);
         }
-        fprintf(arquivo, "%c", bt->item);
-        imprimir_pre_ordem(arquivo, bt->esq);
-        imprimir_pre_ordem(arquivo, bt->dir);
+        fputc( (char*)(raiz_arvore->item) , arquivo);
+        imprimir_pre_ordem(arquivo, raiz_arvore->esq);
+        imprimir_pre_ordem(arquivo, raiz_arvore->dir);
     }
 }
 
@@ -54,42 +54,63 @@ void enfileirar(FILA *fila, NO *no)
         auxiliar->prox = no;
     }
 }
-// A A A B B A = 11 11 11 01  01 11
 
-void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
+FILA* criar_fila_prioridade(HT *ht, FILA *fila)
 {
-    unsigned char aux, opcao;
-    int i, contador=0;
-
-    while( !feof(entrada) ){
-        aux = fgetc(entrada);
-        for(i=0; i < strlen(ht->tabela[aux]->caminho); i++){
-            if(ht->tabela[aux]->caminho[i] == 1){
-                opcao = setar_um_bit(opcao, 7-contador);
-            }
-            contador++;
-            if(contador == 8){
-                fprintf(saida, "%c", opcao);
-                contador=0;
-                opcao=0;
-            }
+    int i;
+    for(i=0; i<256; i++){
+        if(ht->tabela[i]->frequencia != 0){
+            unsigned char caracter = (unsigned char*) malloc(sizeof(unsigned char));
+            caracter = i;
+            NO *no = criar_no(caracter, ht->tabela[i]->frequencia);
+            enfileirar(fila, no);
         }
     }
-}
-
-unsigned char setar_um_bit(unsigned char c, int i)
-{
-    unsigned char mask = 1 << i;
-    return mask | c;
+    return fila;
 }
 
 NO* desenfileirar(FILA *fila)
 {
-    if(fila_vazia(fila)) return;
+    if(fila_vazia(fila)) return NULL;
     NO *auxiliar = fila->cabeca;
     fila->cabeca = fila->cabeca->prox;
     auxiliar->prox = NULL;
     return auxiliar;
+}
+
+NO* criar_arvore_huffman(FILA *fila)
+{
+    if(fila->cabeca->prox != NULL){
+        NO *no_1 = desenfileirar(fila);
+        NO *no_2 = desenfileirar(fila);
+        NO *novo_no = (NO*) malloc(sizeof(NO));
+
+        novo_no->item = '*';
+        novo_no->frequencia = no_1->frequencia + no_2->frequencia;
+        novo_no->dir = no_2;
+        novo_no->esq = no_1;
+        enfileirar(fila, novo_no);
+        criar_arvore_huffman(fila);
+    }else{
+        return fila->cabeca;
+    }
+}
+
+bool eh_folha(NO *no)
+{
+    return(no->dir == NULL && no->esq == NULL);
+}
+
+void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho)
+{
+    if(raiz_arvore != NULL){
+        if( ( (char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*' ) && eh_folha(raiz_arvore) ){
+            *tamanho += 1;
+        }
+        *tamanho += 1;
+        calcula_tam_arvore(raiz_arvore->esq, tamanho);
+        calcula_tam_arvore(raiz_arvore->dir, tamanho);
+    }
 }
 
 ELEMENTO* criar_elemento()
@@ -109,10 +130,12 @@ HT* criar_hash_table()
     return nova_ht;
 }
 
-
-bool eh_folha(NO *no)
-{
-    return(no->dir == NULL && no->esq == NULL);
+void adicionar_cada_frequencia(FILE *arquivo, HT *ht)
+{   
+    int num;
+    while( (num = fgetc(arquivo) ) != EOF){
+        ht->tabela[num]->frequencia += 1;
+    }
 }
 
 void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
@@ -121,17 +144,26 @@ void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
     strcpy(ht->tabela[h]->caminho, caminho);
 }
 
-void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador)
+void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int *contador)
 {
+    if(raiz_arvore == NULL){
+        *caminho--;
+        return;
+    }
     if(eh_folha(raiz_arvore)){
-        caminho[contador] = '\0';
+        printf("\nCAMINHO QUE ESTA NA FOLHA [%s]\n", caminho);
+        printf("\nAQUI ESTA A FREQUENCIA [%d]\n\n", ht->tabela[*contador]->frequencia);
+        caminho[*contador] = '\0';
         adicionar_strings_na_hash(ht, raiz_arvore->item, caminho);
     }else{
-        caminho[contador] = '0';
-        criar_caminho_na_hash(raiz_arvore->esq, ht, caminho, contador+1);
-        caminho[contador] = '1';
-        criar_caminho_na_hash(raiz_arvore->dir, ht, caminho, contador+1);
+        caminho[*contador] = '0';
+        *contador += 1;
+        criar_caminho_na_hash(raiz_arvore->esq, ht, caminho, contador);
+        caminho[*contador] = '1';
+        *contador += 1;
+        criar_caminho_na_hash(raiz_arvore->dir, ht, caminho, contador);
     }
+    *contador--;
 }
 
 int calcula_tam_lixo(HT *ht)
@@ -139,6 +171,7 @@ int calcula_tam_lixo(HT *ht)
     int i, num_bits, soma_num_bits=0;
     for(i=0; i<256; i++){
         if(ht->tabela[i]->frequencia>0){
+            printf("OPA OPA ESTROU\n");
             num_bits = strlen(ht->tabela[i]->caminho);
             num_bits = num_bits*(ht->tabela[i]->frequencia);
             soma_num_bits += num_bits;
@@ -148,70 +181,46 @@ int calcula_tam_lixo(HT *ht)
     return(8 - (soma_num_bits%8));
 }
 
-void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho)
-{
-    if(raiz_arvore != NULL){
-        if( (raiz_arvore->item == '\\' || raiz_arvore->item == '*') && eh_folha(raiz_arvore) ){
-            *tamanho += 1;
-        }
-        *tamanho += 1;
-        calcula_tam_arvore(raiz_arvore->dir, tamanho);
-        calcula_tam_arvore(raiz_arvore->esq, tamanho);
-    }
-}
-
-
 int contem_chave(HT *ht, int chave)
 {
     int h = chave%MAX;
     return( !(ht->tabela[h] == NULL) );
 }
 
-void adicionar_cada_frequencia(FILE *arquivo, HT *ht)
-{   
-    int num;
-    while( (num = fgetc(arquivo) ) != EOF){
-        ht->tabela[num]->frequencia += 1;
-    }
-}
-
-FILA* criar_fila_prioridade(HT *ht, FILA *fila)
+unsigned short setar_bits(unsigned short c, unsigned short *tamanho)
 {
-    int i;
-    for(i=0; i<256; i++){
-        if(ht->tabela[i]->frequencia != 0){
-            unsigned char *caracter = (unsigned char*) malloc(sizeof(unsigned char));
-            *caracter = i;
-            NO *no = criar_no(caracter, ht->tabela[i]->frequencia);
-            enfileirar(fila, no);
-        }
-    }
-    return fila;
-}
-
-unsigned char setar_bits(unsigned char c, int *tamanho)
-{
-    unsigned char mask = *tamanho;
+    unsigned short mask = *tamanho;
     return mask | c;
 }
 
-NO* criar_arvore_huffman(FILA *fila)
+void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
 {
-    if(fila->cabeca->prox != NULL){
-        NO *no_1 = desenfileirar(fila);
-        NO *no_2 = desenfileirar(fila);
-        NO *novo_no = (NO*) malloc(sizeof(NO));
+    unsigned char aux, opcao=0, c=0;
+    int i, contador=0;
 
-        unsigned char *caracter = (unsigned char*) malloc(sizeof(unsigned char));
-        *caracter = '*';
-        novo_no->item = caracter;
-
-        novo_no->frequencia = no_1->frequencia + no_2->frequencia;
-        novo_no->dir = no_2;
-        novo_no->esq = no_1;
-        enfileirar(fila, novo_no);
-        criar_arvore_huffman(fila);
-    }else{
-        return fila->cabeca;
+    while(fscanf(entrada,"%c",&c) != EOF){
+        aux = fgetc(entrada);
+        for(i=0; i < strlen(ht->tabela[aux]->caminho); i++){
+            printf("%s\n\n", ht->tabela[aux]->caminho); //n ta saindo aq
+            if(ht->tabela[aux]->caminho[i] == 1){
+                opcao = setar_um_bit(opcao, 7-contador);
+            }
+            contador++;
+            if(contador == 8){
+                fputc(opcao, saida);
+                printf("PRINTOU LINHA 203\n\n");
+                contador=0;
+                opcao=0;
+            }
+        }
     }
+    if(contador != 0){
+        fputc(opcao, saida);
+    }
+}
+
+unsigned char setar_um_bit(unsigned char c, int i)
+{
+    unsigned char mask = 1 << i;
+    return mask | c;
 }

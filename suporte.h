@@ -34,25 +34,25 @@
     int is_empty(NO *bt);
 
     //Imprime a arvore em pre ordem no arquivo saida.
-    void imprimir_pre_ordem(FILE *arquivo, NO *bt)
+    void imprimir_pre_ordem(FILE *arquivo, NO *bt);
 
     //Printa todos os bits de dados no arquivo saida.
-    void imprimir_bits_dados(FILE *arquivo, NO *bt);
+    void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht);
 
     //Seta apenas um bit desginado.
     unsigned char setar_um_bit(unsigned char c, int i);
 
     //Seta determinados bits.
-    unsigned char setar_bits(unsigned char c, int tamanho);
+    unsigned short setar_bits(unsigned short c, unsigned short *tamanho);
 
     //Adiciona uma strings na hash.
-    void adicionar_strings_na_hash(HT *ht, NO *arvore);
+    void adicionar_strings_na_hash(HT *ht, void *item, char *caminho);
 
     //Cria um NO com seu respectivo item e frequencia.
-    NO* criar_no(void *item, int frequencia);
+    NO* criar_no(unsigned char item, int frequencia);
 
     //Cria uma FILA vazia.
-    FILA* criar_fila_basica();
+    FILA* criar_fila_vazia();
 
     //Adiciona um NO na fila.
     void enfileirar(FILA *fila, NO *no);
@@ -70,7 +70,7 @@
     bool eh_folha(NO *no);
 
     //Cria e salva todos os caminhos em seu respectivo lugar da hash.
-    void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador);
+    void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int *contador);
 
     //Retorna 1 se o ELEMENTO encontra-se na tabela.
     int contem_chave(HT *ht, int chave);
