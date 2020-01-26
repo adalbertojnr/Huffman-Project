@@ -52,6 +52,7 @@ void compactar()
     *nome_do_arquivo = *strtok(nome_do_arquivo, ".");
     *nome_do_arquivo = *strcat(nome_do_arquivo, ".huff");
     FILE *saida = fopen(nome_do_arquivo, "wb");
+<<<<<<< HEAD
     printf("\nProcesso em andamento...\n##############[90%%]\n\n");
 
     fputc(cabecalho , saida);
@@ -59,3 +60,10 @@ void compactar()
     imprimir_bits_dados(arquivo, saida, ht);
     printf("\nProcesso concluido com sucesso!...\n\n");
 }
+=======
+    unsigned char aux = cabecalho;
+    fprintf(saida, "%c%c", cabecalho>>8, aux);
+    imprimir_pre_ordem(saida, arvore);
+    Teste
+}
+>>>>>>> b03287bc540cd8e70ba2cc78294fd9bdf46ca90f
