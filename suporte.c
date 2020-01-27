@@ -19,10 +19,10 @@ int eh_vazia(NO *raiz_arvore)
 void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore)
 {
     if(raiz_arvore != NULL){
-        if( ( (char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*' ) && eh_folha(raiz_arvore) ){
+        if(((char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore) ){
             fputc('\\', arquivo);
         }
-        fputc( (char*)(raiz_arvore->item) , arquivo);
+        fputc((char*)(raiz_arvore->item), arquivo);
         imprimir_pre_ordem(arquivo, raiz_arvore->esq);
         imprimir_pre_ordem(arquivo, raiz_arvore->dir);
     }
@@ -133,9 +133,12 @@ HT* criar_hash_table()
 void adicionar_cada_frequencia(FILE *arquivo, HT *ht)
 {   
     int num;
-    while( (num = fgetc(arquivo) ) != EOF){
+    printf("\nItens:");
+    while((num = fgetc(arquivo)) != EOF){
+        printf(" %c |", num);
         ht->tabela[num]->frequencia += 1;
     }
+    printf("\n");
 }
 
 void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
@@ -144,26 +147,17 @@ void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
     strcpy(ht->tabela[h]->caminho, caminho);
 }
 
-void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int *contador)
+void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador)
 {
-    if(raiz_arvore == NULL){
-        *caminho--;
-        return;
-    }
     if(eh_folha(raiz_arvore)){
-        printf("\nCAMINHO QUE ESTA NA FOLHA [%s]\n", caminho);
-        printf("\nAQUI ESTA A FREQUENCIA [%d]\n\n", ht->tabela[*contador]->frequencia);
-        caminho[*contador] = '\0';
+        caminho[contador] = '\0';
         adicionar_strings_na_hash(ht, raiz_arvore->item, caminho);
     }else{
-        caminho[*contador] = '0';
-        *contador += 1;
-        criar_caminho_na_hash(raiz_arvore->esq, ht, caminho, contador);
-        caminho[*contador] = '1';
-        *contador += 1;
-        criar_caminho_na_hash(raiz_arvore->dir, ht, caminho, contador);
+        caminho[contador] = '0';
+        criar_caminho_na_hash(raiz_arvore->esq, ht, caminho, contador + 1);
+        caminho[contador] = '1';
+        criar_caminho_na_hash(raiz_arvore->dir, ht, caminho, contador + 1);
     }
-    *contador--;
 }
 
 int calcula_tam_lixo(HT *ht)
@@ -171,7 +165,7 @@ int calcula_tam_lixo(HT *ht)
     int i, num_bits, soma_num_bits=0;
     for(i=0; i<256; i++){
         if(ht->tabela[i]->frequencia>0){
-            printf("OPA OPA ESTROU\n");
+            //printf("OPA OPA ESTROU\n");
             num_bits = strlen(ht->tabela[i]->caminho);
             num_bits = num_bits*(ht->tabela[i]->frequencia);
             soma_num_bits += num_bits;
@@ -201,14 +195,14 @@ void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
     while(fscanf(entrada,"%c",&c) != EOF){
         aux = fgetc(entrada);
         for(i=0; i < strlen(ht->tabela[aux]->caminho); i++){
-            printf("%s\n\n", ht->tabela[aux]->caminho); //n ta saindo aq
+            //printf("%s\n\n", ht->tabela[aux]->caminho); //n ta saindo aq
             if(ht->tabela[aux]->caminho[i] == 1){
                 opcao = setar_um_bit(opcao, 7-contador);
             }
             contador++;
             if(contador == 8){
                 fputc(opcao, saida);
-                printf("PRINTOU LINHA 203\n\n");
+                //printf("PRINTOU LINHA 203\n\n");
                 contador=0;
                 opcao=0;
             }
@@ -217,6 +211,9 @@ void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
     if(contador != 0){
         fputc(opcao, saida);
     }
+    printf("\nCOMPACTADO!!\n\n");
+    fclose(entrada);
+    fclose(saida);
 }
 
 unsigned char setar_um_bit(unsigned char c, int i)
