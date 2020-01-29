@@ -18,7 +18,7 @@ void printar_fila(FILA *fila){
         printf("%c-", (char*)(auxiliar->item));
         auxiliar = auxiliar->prox;
     }
-    printf("%c-", (char*)(auxiliar->item));
+    printf("%c", (char*)(auxiliar->item));
 }
 
 void printar_hash(HT *ht){
@@ -39,7 +39,7 @@ void printar_hash(HT *ht){
 void compactar()
 {
     char nome_do_arquivo[100], caminho[ALTURA_MAX];
-    int i, contador=0, inteiro;
+    int i, contador=0, inteiro, auxiliar;
     unsigned short lixo, cabecalho, tamanho=0;
 
     printf("\nDigite o nome do arquivo a ser compactado:\n");
@@ -61,28 +61,19 @@ void compactar()
     
     FILA *fila = criar_fila_vazia();
     fila = criar_fila_prioridade(ht, fila); //Fila aponta para a raiz da arvore.
-    printf("Printar Fila: ");
-    printar_fila(fila);
-    printf("\n\n");
 
-    NO *arvore = criar_arvore_huffman(fila);
-    printf("Printar Arvore: ");
-    print_pre_order(arvore);
-    printf("\n\n");
+    criar_arvore_huffman(fila);
+    NO *arvore = fila->cabeca;
 
     criar_caminho_na_hash(arvore, ht, caminho, contador);
-    printf("Printar Hash:\n\n");
-    printar_hash(ht);
     printf("\nProcesso em andamento...\n##############[47,3%%]\n\n");
 
     lixo = calcula_tam_lixo(ht);
-    printf("Tamanho Lixo: %d\n", lixo);
     inteiro = lixo;
     calcula_tam_arvore(arvore, &tamanho);
-    printf("Tamanho Arvore: %d\n", tamanho);
+
     inteiro = inteiro << 13;
-    inteiro = inteiro | tamanho;
-    //printf("Cabecalho: %d\n", inteiro);
+    inteiro = setar_bits(inteiro, &tamanho);
     printf("\nProcesso em andamento...\n##############[75,2%%]\n\n");
 
     *nome_do_arquivo = *strtok(nome_do_arquivo, ".");
@@ -90,9 +81,11 @@ void compactar()
     FILE *saida = fopen(nome_do_arquivo, "wb");
     printf("\nProcesso em andamento...\n##############[90%%]\n\n");
 
+    auxiliar = inteiro>>8;
+    fputc(auxiliar, saida);
     fputc(inteiro, saida);
+    imprimir_pre_ordem(saida, arvore);
     fseek(saida, (2 + tamanho), SEEK_SET);
-    imprimir_pre_ordem(saida, arvore); //ERRO AQUI
     imprimir_bits_dados(arquivo, saida, ht);
     printf("\nProcesso concluido com sucesso!...\n\n\n\n");
 }

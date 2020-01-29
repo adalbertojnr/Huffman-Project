@@ -30,11 +30,8 @@
         ELEMENTO* tabela[MAX]; //Numero de elementos na tabela ASCII
     }HT;
 
-    //Verifica se a arvore eh vazia.
-    int is_empty(NO *bt);
-
     //Imprime a arvore em pre ordem no arquivo saida.
-    void imprimir_pre_ordem(FILE *arquivo, NO *bt);
+    void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore);
 
     //Printa todos os bits de dados no arquivo saida.
     void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht);
@@ -42,7 +39,7 @@
     //Seta apenas um bit desginado.
     unsigned char setar_um_bit(unsigned char c, int i);
 
-    //Seta determinados bits.
+    //Seta determinado conjunto de bits.
     unsigned short setar_bits(unsigned short c, unsigned short *tamanho);
 
     //Adiciona uma strings na hash.
@@ -70,7 +67,7 @@
     bool eh_folha(NO *no);
 
     //Cria e salva todos os caminhos em seu respectivo lugar da hash.
-    void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int *contador);
+    void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador);
 
     //Retorna 1 se o ELEMENTO encontra-se na tabela.
     int contem_chave(HT *ht, int chave);
@@ -91,5 +88,5 @@
     void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho);
 
     //Transforma a fila de prioridade em um formato de arvore de huffman.
-    NO* criar_arvore_huffman(FILA *fila);
+    void criar_arvore_huffman(FILA *fila);
 #endif

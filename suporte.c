@@ -19,7 +19,7 @@ int eh_vazia(NO *raiz_arvore)
 void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore)
 {
     if(raiz_arvore != NULL){
-        if(((char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore) ){
+        if(((unsigned char*)(raiz_arvore->item) == '\\' || (unsigned char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore) ){
             fputc('\\', arquivo);
         }
         fputc((char*)(raiz_arvore->item), arquivo);
@@ -78,9 +78,9 @@ NO* desenfileirar(FILA *fila)
     return auxiliar;
 }
 
-NO* criar_arvore_huffman(FILA *fila)
+void criar_arvore_huffman(FILA *fila)
 {
-    if(fila->cabeca->prox != NULL){
+    if(fila->cabeca->prox != NULL && fila->cabeca != NULL){
         NO *no_1 = desenfileirar(fila);
         NO *no_2 = desenfileirar(fila);
         NO *novo_no = (NO*) malloc(sizeof(NO));
@@ -92,7 +92,7 @@ NO* criar_arvore_huffman(FILA *fila)
         enfileirar(fila, novo_no);
         criar_arvore_huffman(fila);
     }else{
-        return fila->cabeca;
+        return;
     }
 }
 
@@ -133,12 +133,9 @@ HT* criar_hash_table()
 void adicionar_cada_frequencia(FILE *arquivo, HT *ht)
 {   
     int num;
-    printf("\nItens:");
     while((num = fgetc(arquivo)) != EOF){
-        printf(" %c |", num);
         ht->tabela[num]->frequencia += 1;
     }
-    printf("\n");
 }
 
 void adicionar_strings_na_hash(HT *ht, void *item, char *caminho)
@@ -165,7 +162,6 @@ int calcula_tam_lixo(HT *ht)
     int i, num_bits, soma_num_bits=0;
     for(i=0; i<256; i++){
         if(ht->tabela[i]->frequencia>0){
-            //printf("OPA OPA ESTROU\n");
             num_bits = strlen(ht->tabela[i]->caminho);
             num_bits = num_bits*(ht->tabela[i]->frequencia);
             soma_num_bits += num_bits;
@@ -192,17 +188,15 @@ void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
     unsigned char aux, opcao=0, c=0;
     int i, contador=0;
 
-    while(fscanf(entrada,"%c",&c) != EOF){
+    while( !feof(entrada)){
         aux = fgetc(entrada);
         for(i=0; i < strlen(ht->tabela[aux]->caminho); i++){
-            //printf("%s\n\n", ht->tabela[aux]->caminho); //n ta saindo aq
-            if(ht->tabela[aux]->caminho[i] == 1){
+            if(ht->tabela[aux]->caminho[i] == '1'){
                 opcao = setar_um_bit(opcao, 7-contador);
             }
             contador++;
             if(contador == 8){
                 fputc(opcao, saida);
-                //printf("PRINTOU LINHA 203\n\n");
                 contador=0;
                 opcao=0;
             }
@@ -211,7 +205,6 @@ void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
     if(contador != 0){
         fputc(opcao, saida);
     }
-    printf("\nCOMPACTADO!!\n\n");
     fclose(entrada);
     fclose(saida);
 }
