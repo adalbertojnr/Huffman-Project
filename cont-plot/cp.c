@@ -190,8 +190,6 @@ int main()
         arvore_avl = add_no_avl(arvore_avl, x);
     }
 
-    //printf("teste");
-
     for(i = 0; i < qnt_buscas; i++){
         indice = rand() % tamanho_array;
 
