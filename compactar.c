@@ -44,7 +44,6 @@ void compactar()
 
     printf("\nDigite o nome do arquivo a ser compactado:\n");
     scanf("%s", nome_do_arquivo);
-    //getchar();
 
     FILE *arquivo = fopen(nome_do_arquivo, "rb");
 
@@ -86,6 +85,6 @@ void compactar()
     fputc(inteiro, saida);
     imprimir_pre_ordem(saida, arvore);
     fseek(saida, (2 + tamanho), SEEK_SET);
-    imprimir_bits_dados(arquivo, saida, ht);
+    imprimir_bits_dados(arquivo, saida, ht); // esta printando todos os bits dentro do arquivo.
     printf("\nProcesso concluido com sucesso!...\n\n\n\n");
 }
