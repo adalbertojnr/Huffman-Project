@@ -1,9 +1,9 @@
 # Projeto Huffman 2019.2
 
-Equipe: Adalberto de Lima Junior
-	Augusto Jhon Macedo Cavalcanti
-	Gledson Lima dos Santos
-	William Gabriel da Paz Rosendo
+Equipe: Adalberto de Lima Junior,
+	Augusto Jhon Macedo Cavalcanti,
+	Gledson Lima dos Santos,
+	William Gabriel da Paz Rosendo,
 
 Seminário: Red-Black
 
