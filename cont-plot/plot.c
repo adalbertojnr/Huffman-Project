@@ -191,7 +191,7 @@ int main()
 
 	Comp_Data = fopen("Comp_Data.txt", "w");
 
-	fprintf(Comp_Data, "%s\t%s\t%s\t%s\n", "Comparações_AVL", "Tamanho_AVL", "Comparações_ABB", "Tamanho_ABB");
+	fprintf(Comp_Data,"ABB AVL Valor\n");
 
 	int i, x, index, array_size, counter;
 	int countAVL = 0, countABB = 0;
@@ -207,10 +207,9 @@ int main()
 
 	for(i = 0; i < array_size; i++)
 	{
-		x = rand();
-		array[i] = x;
-		binary_tree = add_leaf_bt(binary_tree, x);
-		tree = add_leaf_avl(tree, x);
+		array[i] = i;
+		binary_tree = add_leaf_bt(binary_tree, i);
+		tree = add_leaf_avl(tree, i);
 	}
 
 	for(i = 0; i < counter; i++)
@@ -222,7 +221,7 @@ int main()
 			countAVL = ABB_AVL_counter(tree, array[index]);
 			array_visited[index] = 1;
 
-			fprintf(Comp_Data, "%d\t%d\t%d\t%d\n", countAVL, index+1, countABB, index+1);
+			fprintf(Comp_Data, "%d %d %d\n", countABB, countAVL, array[index]);
 		}
 	}
 
