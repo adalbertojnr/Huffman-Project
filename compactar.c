@@ -1,40 +1,5 @@
 #include "compactar.h"
 
-//---------------------------------TESTES-------------------------------------//
-
-void print_pre_order(NO *tree)
-{
-	if(tree != NULL){
-    	printf("%c", (char*)(tree->item) );
-        print_pre_order(tree->esq);
-    	print_pre_order(tree->dir);
-	}
-}
-
-void printar_fila(FILA *fila){
-    NO *auxiliar = fila->cabeca;
-
-    while(auxiliar->prox != NULL){
-        printf("%c-", (char*)(auxiliar->item));
-        auxiliar = auxiliar->prox;
-    }
-    printf("%c", (char*)(auxiliar->item));
-}
-
-void printar_hash(HT *ht){
-    int i;
-
-    for(i=0; i<256; i++){
-        if((ht->tabela[i]->frequencia)>0){
-            printf("Caracter: %c\nCaminho: %s\nFrequencia: %d\n\n", i, ht->tabela[i]->caminho, ht->tabela[i]->frequencia);
-        }
-    }
-}
-
-//-------------------------------FIM TESTES----------------------------------//
-
-
-
 //Realiza todo o procedimento para compactar.
 void compactar()
 {
@@ -48,10 +13,10 @@ void compactar()
     FILE *arquivo = fopen(nome_do_arquivo, "rb");
 
     if(arquivo == NULL){
-        printf("Erro no arquivo.\nERRO 017\n");
+        printf("\nErro no arquivo.\nERRO 017\n\n");
         return;
     }
-    printf("Iniciando processo de compactação...\n##############[0%%]\n\n");
+    printf("\nIniciando processo de compactação...\n##############[0%%]\n\n");
 
     HT *ht = criar_hash_table();
     adicionar_cada_frequencia(arquivo, ht);
@@ -85,6 +50,5 @@ void compactar()
     fputc(inteiro, saida);
     imprimir_pre_ordem(saida, arvore);
     fseek(saida, (2 + tamanho), SEEK_SET);
-    imprimir_bits_dados(arquivo, saida, ht); // esta printando todos os bits dentro do arquivo.
-    printf("\nProcesso concluido com sucesso!...\n\n\n\n");
+    imprimir_bits_dados(arquivo, saida, ht); // Printa todos os bits dentro do arquivo.
 }

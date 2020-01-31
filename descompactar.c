@@ -15,7 +15,7 @@ int descompressao(FILE *compactado, char *nome)
 	short tamanho_lixo, tamanho_arvore = 8191; // tamanho_arvore recebe 8191 pois é o maior valor possível de um byte
 	char nome_saida[50];
     unsigned char primeirobyte, segundobyte;
-    NODE *raiz = NULL;
+    NO *raiz = NULL;
     FILE *descompactado;
     getchar();
     printf("Digite o nome final do arquivo: ");
@@ -42,22 +42,22 @@ int descompressao(FILE *compactado, char *nome)
 	printar_byte(compactado, descompactado, raiz, tamanho_arvore, tamanho_lixo, (tamanho_arquivo-tamanho_arvore-2)); // Escreve tudo no arquivo
 	fclose(compactado);
 	fclose(descompactado);
-    printf("\nArquivo descompactado com sucesso!\n");
+    printf("\nArquivo descompactado com sucesso!\n\n");
 	return 0;
 }
 
-NODE *montar_arvore(FILE *compactado) //Reconstruir a árvore de huffman do arquivo compactado
+NO *montar_arvore(FILE *compactado) //Reconstruir a árvore de huffman do arquivo compactado
 {
 	unsigned char atual;
-    NODE *novo_no;
+    NO *novo_no;
     atual = fgetc(compactado);
     if (atual == '*')
     {
     	novo_no = criar_no_arvore(atual);
-        novo_no->esquerda = montar_arvore(compactado);
-        novo_no->direita = montar_arvore(compactado);
+        novo_no->esq = montar_arvore(compactado);
+        novo_no->dir = montar_arvore(compactado);
     }
-    else if (atual == (char)BARRA)
+    else if (atual == '\\')
     {
         atual = fgetc(compactado);
         novo_no = criar_no_arvore(atual);
@@ -69,24 +69,24 @@ NODE *montar_arvore(FILE *compactado) //Reconstruir a árvore de huffman do arqu
     return novo_no;
 }
 
-NODE *criar_no_arvore(unsigned char caractere)
+NO *criar_no_arvore(unsigned char caractere)
 {
 	unsigned char *aux = (unsigned char *)malloc(sizeof(unsigned char));
     *aux = caractere;
-	NODE *novo_no = (NODE *)malloc(sizeof(NODE));
+	NO *novo_no = (NO *)malloc(sizeof(NO));
     novo_no->frequencia = 0;
     novo_no->item = aux;
-    novo_no->direita = NULL;
-    novo_no->esquerda = NULL;
-    novo_no->proximo = NULL;
+    novo_no->dir = NULL;
+    novo_no->esq = NULL;
+    novo_no->prox = NULL;
     return novo_no;
 }
 
-void printar_byte(FILE* compactado, FILE* descompactado, NODE *raiz, short tamanho_arvore, short tamanho_lixo, int tamanho_arquivo) //Escreve o arquivo descompactado
+void printar_byte(FILE* compactado, FILE* descompactado, NO *raiz, short tamanho_arvore, short tamanho_lixo, int tamanho_arquivo) //Escreve o arquivo descompactado
 {
     long int i, j, k;
 	unsigned char c;
-	NODE *atual = raiz;
+	NO *atual = raiz;
 	for (i = 0; i < tamanho_arquivo; ++i)
 	{
 		c = fgetc(compactado);
@@ -99,12 +99,12 @@ void printar_byte(FILE* compactado, FILE* descompactado, NODE *raiz, short taman
 		for (j = 0; j < k; ++j)
 		{
 			if(bit_esta_setado(c, 7 - j)) {
-				atual = atual->direita;
+				atual = atual->dir;
             }
 			else {
-				atual = atual->esquerda;
+				atual = atual->esq;
             }
-			if (atual->esquerda == NULL && atual->direita == NULL)
+			if (atual->esq == NULL && atual->dir == NULL)
             {
                 fprintf(descompactado, "%c", *(unsigned char*)atual->item);
                 atual = raiz;

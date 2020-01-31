@@ -8,12 +8,15 @@
 #include "suporte.c"
 #include "compactar.c"
 #include "descompactar.c"
+#include "interface.h"
 
 int main()
 {
+    interface();
+    welcome();
     int escolha, i;
     while(1){
-        printf("Escolha o procedimento a ser realizado\n(1 para Compactar, 2 para Descompactar e 3 para Sair do programa):\n");
+        printf("Escolha o procedimento a ser realizado:\n1 - Compactar\n2 - Descompactar\n3 - Sair do programa\n");
         scanf("%d", &escolha);
         if(escolha == 1){
             compactar();

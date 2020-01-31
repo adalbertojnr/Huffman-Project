@@ -1,5 +1,7 @@
 #include "suporte.h"
 
+//-----------------------FILA-------------------------//
+
 NO* criar_no(unsigned char item, int frequencia)
 {
     NO *novo_no = (NO*) malloc(sizeof(NO));
@@ -11,21 +13,9 @@ NO* criar_no(unsigned char item, int frequencia)
     return novo_no;
 }
 
-int eh_vazia(NO *raiz_arvore)
+bool fila_vazia(FILA *fila)
 {
-    return (raiz_arvore == NULL);
-}
-
-void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore)
-{
-    if(raiz_arvore != NULL){
-        if(((unsigned char*)(raiz_arvore->item) == '\\' || (unsigned char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore) ){
-            fputc('\\', arquivo);
-        }
-        fputc((char*)(raiz_arvore->item), arquivo);
-        imprimir_pre_ordem(arquivo, raiz_arvore->esq);
-        imprimir_pre_ordem(arquivo, raiz_arvore->dir);
-    }
+    return (fila->cabeca == NULL);
 }
 
 FILA* criar_fila_vazia()
@@ -33,11 +23,6 @@ FILA* criar_fila_vazia()
     FILA *nova_fila = (FILA*) malloc(sizeof(FILA));
     nova_fila->cabeca = NULL;
     return nova_fila;
-}
-
-int fila_vazia(FILA *fila)
-{
-    return (fila->cabeca == NULL);
 }
 
 void enfileirar(FILA *fila, NO *no)
@@ -55,12 +40,21 @@ void enfileirar(FILA *fila, NO *no)
     }
 }
 
+NO* desenfileirar(FILA *fila)
+{
+    if(fila_vazia(fila)) return NULL;
+    NO *auxiliar = fila->cabeca;
+    fila->cabeca = fila->cabeca->prox;
+    auxiliar->prox = NULL;
+    return auxiliar;
+}
+
 FILA* criar_fila_prioridade(HT *ht, FILA *fila)
 {
     int i;
     for(i=0; i<256; i++){
         if(ht->tabela[i]->frequencia != 0){
-            unsigned char caracter = (unsigned char*) malloc(sizeof(unsigned char));
+            unsigned char caracter = *(unsigned char*) malloc(sizeof(unsigned char));
             caracter = i;
             NO *no = criar_no(caracter, ht->tabela[i]->frequencia);
             enfileirar(fila, no);
@@ -69,13 +63,17 @@ FILA* criar_fila_prioridade(HT *ht, FILA *fila)
     return fila;
 }
 
-NO* desenfileirar(FILA *fila)
+
+//---------------------------ARVORE-----------------------------//
+
+bool eh_vazia(NO *raiz_arvore)
 {
-    if(fila_vazia(fila)) return NULL;
-    NO *auxiliar = fila->cabeca;
-    fila->cabeca = fila->cabeca->prox;
-    auxiliar->prox = NULL;
-    return auxiliar;
+    return (raiz_arvore == NULL);
+}
+
+bool eh_folha(NO *no)
+{
+    return(no->dir == NULL && no->esq == NULL);
 }
 
 void criar_arvore_huffman(FILA *fila)
@@ -86,9 +84,9 @@ void criar_arvore_huffman(FILA *fila)
         NO *novo_no = (NO*) malloc(sizeof(NO));
 
         novo_no->item = '*';
-        novo_no->frequencia = no_1->frequencia + no_2->frequencia;
-        novo_no->dir = no_2;
+        novo_no->frequencia = (no_1->frequencia + no_2->frequencia);
         novo_no->esq = no_1;
+        novo_no->dir = no_2;
         enfileirar(fila, novo_no);
         criar_arvore_huffman(fila);
     }else{
@@ -96,15 +94,10 @@ void criar_arvore_huffman(FILA *fila)
     }
 }
 
-bool eh_folha(NO *no)
-{
-    return(no->dir == NULL && no->esq == NULL);
-}
-
 void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho)
 {
     if(raiz_arvore != NULL){
-        if( ( (char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*' ) && eh_folha(raiz_arvore) ){
+        if(((char*)(raiz_arvore->item) == '\\' || (char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore)){
             *tamanho += 1;
         }
         *tamanho += 1;
@@ -112,6 +105,21 @@ void calcula_tam_arvore(NO *raiz_arvore, unsigned short *tamanho)
         calcula_tam_arvore(raiz_arvore->dir, tamanho);
     }
 }
+
+void imprimir_pre_ordem(FILE *arquivo, NO *raiz_arvore)
+{
+    if(raiz_arvore != NULL){
+        if(((unsigned char*)(raiz_arvore->item) == '\\' || (unsigned char*)(raiz_arvore->item) == '*') && eh_folha(raiz_arvore) ){
+            fputc('\\', arquivo);
+        }
+        fputc((char*)(raiz_arvore->item), arquivo);
+        imprimir_pre_ordem(arquivo, raiz_arvore->esq);
+        imprimir_pre_ordem(arquivo, raiz_arvore->dir);
+    }
+}
+
+
+//--------------------------HASH-------------------------------//
 
 ELEMENTO* criar_elemento()
 {
@@ -157,6 +165,20 @@ void criar_caminho_na_hash(NO *raiz_arvore, HT *ht, char *caminho, int contador)
     }
 }
 
+//----------------------AUXILIARES------------------------//
+
+unsigned char setar_um_bit(unsigned char c, int i)
+{
+    unsigned char mask = 1 << i;
+    return mask | c;
+}
+
+unsigned short setar_bits(unsigned short c, unsigned short *tamanho)
+{
+    unsigned short mask = *tamanho;
+    return mask | c;
+}
+
 int calcula_tam_lixo(HT *ht)
 {
     int i, num_bits, soma_num_bits=0;
@@ -169,18 +191,6 @@ int calcula_tam_lixo(HT *ht)
     }
     if((soma_num_bits%8) == 0) return 0;
     return(8 - (soma_num_bits%8));
-}
-
-int contem_chave(HT *ht, int chave)
-{
-    int h = chave%MAX;
-    return( !(ht->tabela[h] == NULL) );
-}
-
-unsigned short setar_bits(unsigned short c, unsigned short *tamanho)
-{
-    unsigned short mask = *tamanho;
-    return mask | c;
 }
 
 void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
@@ -209,8 +219,8 @@ void imprimir_bits_dados(FILE *entrada, FILE *saida, HT *ht)
     fclose(saida);
 }
 
-unsigned char setar_um_bit(unsigned char c, int i)
+bool bit_esta_setado(unsigned char c, int i)
 {
-    unsigned char mask = 1 << i;
-    return mask | c;
+    unsigned char mascara = 1 << i;
+    return mascara & c;
 }

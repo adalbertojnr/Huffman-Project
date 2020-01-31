@@ -6,6 +6,6 @@
     #include <stdbool.h>
     #include "suporte.h"
 
-    //Realiza todo o procedimento para descompactar, partindo da entrada até a saída.
+    //Realiza todo o procedimento para descompactar, da entrada à saída. 
     void descompactar();
 #endif
