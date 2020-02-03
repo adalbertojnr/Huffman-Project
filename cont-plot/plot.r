@@ -7,7 +7,7 @@ max_x <- max(comp208$Tamanho_AVL, comp208$Tamanho_ABB)
 #Define colors to be used for AVL and BST
 plot_colors <- c("black", 'red')
 
-#Start PNG device to save output to Fig_Plot.png
+#Start PNG device to save output to Grafico_plotagem.png
 png("Grafico_plotagem.png", height = 720, width = 1280, bg = "white")
 
 #Plotting
@@ -15,17 +15,17 @@ plot(comp208$Tamanho_ABB, comp208$Comparações_ABB, type = "p", pch = 20, col =
      ylim = c(0, max_y), xlim = c(0, max_x), axes = FALSE, ann = FALSE)
 
 #Change interval scale
-axis(1, las = 1, at = ((max_x %% 100000)/10)*0:max_x)
+axis(1, las = 1, at = ((max_x %% 10000000)/10)*0:max_x)
 
-axis(2, las = 1, at = ((max_y %% 100000)/10)*0:max_y)
+axis(2, las = 1, at = ((max_y %% 10000000)/10)*0:max_y)
 
 box()
 
-#Graph BST
+#Graph ABB
 lines(comp208$Tamanho_AVL, comp208$Comparações_AVL, type = "p", pch = 20, lty = 2, col = plot_colors[2])
 
 #Create a title with red, bold/italic font
-title(main = "Search Algorithm: AVL x BST", col.main = "black", font.main = 4)
+title(main = "Search Algorithm: ABB X AVL", col.main = "black", font.main = 4)
 
 #Label the x and y axes with dark green text
 title(xlab = "Size", col.lab = rgb(0, 0, 0), cex.lab = 1.75, line = 2.5)

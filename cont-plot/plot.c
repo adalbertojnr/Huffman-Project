@@ -191,7 +191,7 @@ int main()
 
 	Comp_Data = fopen("Comp_Data.txt", "w");
 
-	fprintf(Comp_Data,"ABB AVL Valor\n");
+	fprintf(Comp_Data, "%s\t%s\t%s\t%s\n", "Comparações_AVL", "Valor", "Comparações_ABB", "Valor");
 
 	int i, x, index, array_size, counter;
 	int countAVL = 0, countABB = 0;
@@ -199,7 +199,7 @@ int main()
 
 	printf("Insira o tamanho do array:\t");
 	scanf("%d", &array_size);
-	printf("Insira quantas buscas deve-se fazer\t");
+	printf("Insira quantas buscas deve-se fazer:\t");
 	scanf("%d", &counter);
 
 	int *array = (int*)malloc(sizeof(int) * array_size);
@@ -221,7 +221,7 @@ int main()
 			countAVL = ABB_AVL_counter(tree, array[index]);
 			array_visited[index] = 1;
 
-			fprintf(Comp_Data, "%d %d %d\n", countABB, countAVL, array[index]);
+			fprintf(Comp_Data, "%d\t%d\t%d\t%d\n", countAVL, array[index], countABB, array[index]);
 		}
 	}
 
